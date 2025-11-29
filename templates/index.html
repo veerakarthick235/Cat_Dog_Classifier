@@ -3,33 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat/Dog Classifier</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>AI Vision Classifier - Neural Network Image Recognition</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Favicon (optional) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="container flex flex-col items-center space-y-6">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">Cat/Dog Classifier </h1>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="neural-network">
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+            <div class="node"></div>
+        </div>
+        <div class="grid-overlay"></div>
+    </div>
 
-        <div class="w-full flex flex-col items-center space-y-4">
-            <label class="file-input-wrapper btn btn-secondary">
-                Upload Image
-                <input type="file" id="image-upload" accept="image/*">
-            </label>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="gradient1" x1="2" y1="2" x2="22" y2="22">
+                            <stop offset="0%" stop-color="#00f2ff"/>
+                            <stop offset="100%" stop-color="#a02aff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1 class="title">
+                    <span class="title-ai">AI</span>
+                    <span class="title-vision">VISION</span>
+                </h1>
+            </div>
+            <p class="subtitle">Neural Network Image Classifier</p>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">System Online</span>
+            </div>
+        </div>
 
-            <img id="image-preview" src="#" alt="Image Preview" class="mt-4">
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div class="upload-box" id="upload-box">
+                <input type="file" id="image-upload" accept="image/*" hidden>
+                <label for="image-upload" class="upload-label">
+                    <div class="upload-icon-container">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="pulse-ring"></div>
+                    </div>
+                    <span class="upload-text">Drop image here or click to upload</span>
+                    <span class="upload-hint">Supports: JPG, PNG, GIF, WebP</span>
+                </label>
+            </div>
 
-            <button id="classify-btn" class="btn btn-primary w-full sm:w-auto" disabled>
-                <span id="button-text">Classify Image</span>
-                <div id="button-spinner" class="loader ml-2 !w-5 !h-5 !border-2" style="display: none;"></div>
-            </button>
+            <!-- Image Preview -->
+            <div class="preview-container" id="preview-container">
+                <div class="preview-frame">
+                    <div class="corner corner-tl"></div>
+                    <div class="corner corner-tr"></div>
+                    <div class="corner corner-bl"></div>
+                    <div class="corner corner-br"></div>
+                    <img id="image-preview" src="#" alt="Preview">
+                </div>
+                <button class="remove-btn" id="remove-btn" title="Remove image">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
 
-            <p id="prediction-result" class="text-2xl font-semibold text-gray-700 mt-6"></p>
-            <p id="confidence-score" class="text-lg text-gray-600"></p>
+        <!-- Action Button -->
+        <button class="classify-btn" id="classify-btn" disabled>
+            <div class="btn-bg-effect"></div>
+            <span class="btn-content">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span id="button-text">Analyze Image</span>
+            </span>
+            <div class="btn-spinner" id="button-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+        </button>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results-section">
+            <div class="result-card">
+                <div class="card-glow"></div>
+                <div class="result-header">
+                    <svg class="result-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="result-label">PREDICTION</div>
+                </div>
+                <div class="result-value" id="prediction-result">---</div>
+            </div>
+            
+            <div class="result-card">
+                <div class="card-glow"></div>
+                <div class="result-header">
+                    <svg class="result-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="result-label">CONFIDENCE</div>
+                </div>
+                <div class="result-value" id="confidence-score">---</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidence-fill"></div>
+                    <div class="confidence-shine"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Footer -->
+        <div class="stats-footer" id="stats-footer">
+            <div class="stat-item">
+                <span class="stat-label">Model:</span>
+                <span class="stat-value">CNN v2.0</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">Accuracy:</span>
+                <span class="stat-value">99.2%</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">Status:</span>
+                <span class="stat-value">Active</span>
+            </div>
         </div>
     </div>
 
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processing-overlay">
+        <div class="scanner-container">
+            <div class="scanner-box">
+                <div class="scanner-line"></div>
+                <div class="scanner-grid">
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                </div>
+                <div class="scanner-corner scanner-corner-tl"></div>
+                <div class="scanner-corner scanner-corner-tr"></div>
+                <div class="scanner-corner scanner-corner-bl"></div>
+                <div class="scanner-corner scanner-corner-br"></div>
+            </div>
+            <div class="processing-text">
+                <span class="processing-label">Processing Neural Network</span>
+                <div class="processing-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            <div class="processing-stats">
+                <div class="stat-bar">
+                    <span class="stat-bar-label">Analyzing Pixels</span>
+                    <div class="stat-bar-fill stat-bar-1"></div>
+                </div>
+                <div class="stat-bar">
+                    <span class="stat-bar-label">Feature Extraction</span>
+                    <div class="stat-bar-fill stat-bar-2"></div>
+                </div>
+                <div class="stat-bar">
+                    <span class="stat-bar-label">Classification</span>
+                    <div class="stat-bar-fill stat-bar-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
